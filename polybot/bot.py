@@ -78,6 +78,7 @@ class ImageProcessingBot(Bot):
     def __init__(self, token, telegram_chat_url):
         super().__init__(token, telegram_chat_url)
 
+
     def handle_message(self, msg):
         if "text" in msg:
             self.send_text(msg['chat']['id'], f'Your original message: {msg["text"]}')
