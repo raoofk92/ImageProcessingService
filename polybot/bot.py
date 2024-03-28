@@ -75,4 +75,42 @@ class QuoteBot(Bot):
 
 
 class ImageProcessingBot(Bot):
-    pass
+    def __init__(self, token, telegram_chat_url):
+        super().__init__(token, telegram_chat_url)
+
+    def handle_message(self, msg):
+        if "text" in msg:
+            self.send_text(msg['chat']['id'], f'Your original message: {msg["text"]}')
+        else:
+            if "caption" in msg:
+                try:
+                    img_path = self.download_user_photo(msg)
+                    caption = msg["caption"].lower()  # ignore capital or lower case
+                    if caption == "blur":
+                        self.send_text(msg['chat']['id'], "Blur filter in progress")
+                        new_img = Img(img_path)
+                        new_img.blur()
+                        new_path = new_img.save_img()
+                        self.send_photo(msg["chat"]["id"], new_path)
+                        self.send_text(msg['chat']['id'], "Blur filter applied")
+                    elif caption == "contour":
+                        self.send_text(msg['chat']['id'], "Contour filter in progress")
+                        new_img = Img(img_path)
+                        new_img.contour()
+                        new_path = new_img.save_img()
+                        self.send_photo(msg["chat"]["id"], new_path)
+                        self.send_text(msg['chat']['id'], "Contour filter applied")
+                    elif caption == "salt and pepper":
+                        self.send_text(msg['chat']['id'], "Salt and Pepper filter in progress")
+                        new_img = Img(img_path)
+                        new_img.salt_n_pepper()
+                        new_path = new_img.save_img()
+                        self.send_photo(msg["chat"]["id"], new_path)
+                        self.send_text(msg['chat']['id'], "Salt and Pepper filter applied")
+                    else:
+                        self.send_text(msg['chat']['id'], f'Error, please choose a valid caption')
+                except Exception as e:
+                    logger.info(f"Error {e}")
+                    self.send_text(msg['chat']['id'], f'Failed - Try again later')
+            else:
+                self.send_text(msg['chat']['id'], f'Failed - Please provide caption')

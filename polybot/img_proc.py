@@ -1,5 +1,6 @@
 from pathlib import Path
 from matplotlib.image import imread, imsave
+import random
 
 
 def rgb2gray(rgb):
@@ -55,8 +56,17 @@ class Img:
         raise NotImplementedError()
 
     def salt_n_pepper(self):
-        # TODO remove the `raise` below, and write your implementation
-        raise NotImplementedError()
+
+        height = len(self.data)
+        width = len(self.data[0])
+
+        for i in range(height):
+            for j in range(width):
+                rand = random.random()
+                if rand < 0.05:
+                    self.data[i][j] = 255
+                elif rand > 0.95:
+                    self.data[i][j] = 0
 
     def concat(self, other_img, direction='horizontal'):
         # TODO remove the `raise` below, and write your implementation
